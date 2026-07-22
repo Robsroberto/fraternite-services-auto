@@ -20,8 +20,8 @@
                  class="fixed inset-0 z-30 bg-black/60 lg:hidden"></div>
 
             <!-- Sidebar -->
-            <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-                   class="fixed inset-y-0 left-0 z-40 w-64 transform bg-gray-900 border-r border-gray-800 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 flex flex-col">
+            <aside :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
+                   class="fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 border-r border-gray-800 transition-transform duration-200 ease-in-out lg:!translate-x-0 lg:static flex flex-col">
                 <div class="flex items-center gap-2.5 px-5 h-16 border-b border-gray-800 shrink-0">
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
                         <x-icon name="car" class="w-5 h-5 text-white" />
