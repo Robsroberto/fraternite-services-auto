@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -9,23 +10,37 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_registration_screen_requires_admin(): void
     {
-        $response = $this->get('/register');
+        $gestionnaire = User::factory()->create(['role' => 'gestionnaire']);
+
+        $response = $this->actingAs($gestionnaire)->get('/utilisateurs/creer');
+
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_can_view_registration_screen(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get('/utilisateurs/creer');
 
         $response->assertStatus(200);
     }
 
-    public function test_new_users_can_register(): void
+    public function test_admin_can_register_new_users(): void
     {
-        $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->post('/utilisateurs', [
+            'name' => 'Nouvel Utilisateur',
+            'email' => 'nouveau@fraternite-services.sn',
+            'role' => 'gestionnaire',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', ['email' => 'nouveau@fraternite-services.sn', 'role' => 'gestionnaire']);
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 }
